@@ -1,27 +1,38 @@
+import os
+# SQL
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from core import Core
 from utils import Animation
-
-from model.smokingfrequency import SmokingFrequency
-from model.alcohol import Alcohol
-from model.personality import Personality
-from model.communication import Communication
-from model.languageoflove import LanguageOfLove
-from model.language import Language
-from model.astrologicalsign import AstrologicalSign
-from model.sleephabits import SleepHabits
-from model.sport import Sport
-from model.pet import Pet
-from model.bloodgroup import BloodGroup
-from model.users import Users
-from model.position import Position
 from json import load as jsonload
-
+# MODEL
+from model.alcohol import Alcohol
+from model.astrologicalsign import AstrologicalSign
+# from model.badge import Badge
+# from model.base import Base
+from model.bloodgroup import BloodGroup
+from model.communication import Communication
+# from model.config import Config
+# from model.familyprojects import FamilyProjects
+from model.foodpreferences import FoodPreferences
+from model.job import Job
+# from model.language import Language
+from model.languageoflove import LanguageOfLove
+from model.levelstudy import LevelStudy
+from model.personality import Personality
+from model.pet import Pet
+# from model.photo import Photo
+from model.position import Position
+from model.relationshipintent import RelationshipIntent
+from model.school import School
 from model.sexualorientation import SexualOrientation
-
-import os
+from model.sleephabits import SleepHabits
+from model.smokingfrequency import SmokingFrequency
+from model.sport import Sport
+# from model.userbadge import UserBadge
+# from model.userlanguage import UserLanguage
+from model.users import Users
 
 dbconfig = Core.config.database
 engine = create_engine(f"mysql+mysqlconnector://{dbconfig.login.user}:{dbconfig.login.password}@{dbconfig.host}:{dbconfig.port}/{dbconfig.name}")
@@ -67,7 +78,7 @@ def add_or_get_id_from_value(table, column:str|tuple[str], value:str|tuple[str],
         res = session.query(table).filter_by(**colval).first()
 
         if res is None:
-            if not just_get_id:
+            if not just_get_id and len([colval[key] for key in colval.keys() if colval[key] is not None]) > 0:
                 session.add(table(**colval))
                 session.commit()
                 res = session.query(table).filter_by(**colval).first()
@@ -86,7 +97,7 @@ def add_or_get_id_from_value(table, column:str|tuple[str], value:str|tuple[str],
 def get_value(*keys) -> str|int|list|None:
     d = data
     for key in keys:
-        if isinstance(d, dict) and key in list(d.keys()):
+        if (isinstance(d, dict) and key in list(d.keys())) or (isinstance(d, list) and len(d) > 0):
             d = d[key]
         else:
             return None
@@ -114,24 +125,22 @@ for filename in os.listdir(datapath):
         data = record
         if isAlreadySaved(get_value("user", "_id"), latitude, longitude):
             continue
-        so_id = get_value("user", "sexual_orientations")
-        if so_id is not None:
-            so_id = so_id[0]["id"]
+
         utilisateur = Users(
             id_tinder=get_value("user", "_id"), 
             bio=get_value("user", "bio"), 
             birth_date=get_value("user", "birth_date"), 
             name=get_value("user", "name"), 
             gender=get_value("user", "gender"), 
-            sexual_orientation_id=add_or_get_id_from_value(SexualOrientation, "code", so_id, just_get_id=True), 
-            job_id=None, 
-            school_id=None, 
+            sexual_orientation_id=add_or_get_id_from_value(SexualOrientation, "code", get_value("user", "sexual_orientations", 0, "id"), just_get_id=True), 
+            job_id=add_or_get_id_from_value(Job, ("company", "profession"), (get_value("user", "jobs", 0, "company", "name"), get_value("user", "jobs", 0, "title", "name"))), 
+            school_id=add_or_get_id_from_value(School, "label", get_value("user", "schools", 0, "name")), 
             measurement=selected_descriptors_by_id("de_30"), 
-            astrological_sign_id=add_or_get_id_from_value(AstrologicalSign, "label", selected_descriptors_by_id("de_1")), 
-            level_study_id=None, 
+            astrological_sign_id=add_or_get_id_from_value(AstrologicalSign, "label", selected_descriptors_by_id("de_1"), just_get_id=True), 
+            level_study_id=add_or_get_id_from_value(LevelStudy, "label", selected_descriptors_by_id("de_9")), 
             family_projects_id=None, 
             covid_vaccine="Vacciné•e" in str(selected_descriptors_by_id("de_34")), 
-            personality_id=add_or_get_id_from_value(Personality, "label", selected_descriptors_by_id("de_13")), 
+            personality_id=add_or_get_id_from_value(Personality, "label", selected_descriptors_by_id("de_13"), just_get_id=True), 
             communication_id=add_or_get_id_from_value(Communication, "label", selected_descriptors_by_id("de_2")), 
             language_of_love_id=add_or_get_id_from_value(LanguageOfLove, "label", selected_descriptors_by_id("de_35")), 
             blood_group_id=add_or_get_id_from_value(BloodGroup, "label", selected_descriptors_by_id("de_14")), 
@@ -139,9 +148,10 @@ for filename in os.listdir(datapath):
             alcohol_id=add_or_get_id_from_value(Alcohol, "label", selected_descriptors_by_id("de_22")), 
             smoking_frequency_id=add_or_get_id_from_value(SmokingFrequency, "label", selected_descriptors_by_id("de_11")), 
             sport_id=add_or_get_id_from_value(Sport, "label", selected_descriptors_by_id("de_10")), 
-            food_preferences_id=None, 
+            food_preferences_id=add_or_get_id_from_value(FoodPreferences, "label", selected_descriptors_by_id("de_7")), 
             social_networks_id=None, 
             sleep_habits_id=add_or_get_id_from_value(SleepHabits, "label", selected_descriptors_by_id("de_17")), 
+            relationship_intent_id=add_or_get_id_from_value(RelationshipIntent, "label", get_value("relationship_intent", "body_text")), 
             distance=get_value("distance_mi"), 
             position_id=add_or_get_id_from_value(Position, ("latitude", "longitude"), (latitude, longitude))
         )

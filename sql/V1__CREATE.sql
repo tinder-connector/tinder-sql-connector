@@ -106,7 +106,8 @@ CREATE TABLE `foodpreferences` (
 
 CREATE TABLE `job` (
   `id` int(11) NOT NULL,
-  `label` varchar(255) DEFAULT NULL
+  `company` varchar(255) DEFAULT NULL,
+  `profession` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -251,6 +252,17 @@ CREATE TABLE `socialnetworks` (
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `relationshipintent`
+--
+
+CREATE TABLE `relationshipintent` (
+  `id` int(11) NOT NULL,
+  `label` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `sport`
 --
 
@@ -313,6 +325,7 @@ CREATE TABLE `users` (
   `food_preferences_id` int(11) DEFAULT NULL,
   `social_networks_id` int(11) DEFAULT NULL,
   `sleep_habits_id` int(11) DEFAULT NULL,
+  `relationship_intent_id` int(11) DEFAULT NULL,
   `distance` int(11) DEFAULT NULL,
   `position_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
@@ -443,6 +456,12 @@ ALTER TABLE `socialnetworks`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Index pour la table `relationshipintent`
+--
+ALTER TABLE `relationshipintent`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Index pour la table `sport`
 --
 ALTER TABLE `sport`
@@ -482,6 +501,7 @@ ALTER TABLE `users`
   ADD KEY `sport_id` (`sport_id`),
   ADD KEY `food_preferences_id` (`food_preferences_id`),
   ADD KEY `social_networks_id` (`social_networks_id`),
+  ADD KEY `relationship_intent_id` (`relationship_intent_id`),
   ADD KEY `sleep_habits_id` (`sleep_habits_id`),
   ADD KEY `fk_position_id` (`position_id`),
   ADD KEY `sexual_orientation_id` (`sexual_orientation_id`);
@@ -494,7 +514,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `alcohol`
 --
 ALTER TABLE `alcohol`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `astrologicalsign`
@@ -536,7 +556,7 @@ ALTER TABLE `foodpreferences`
 -- AUTO_INCREMENT pour la table `job`
 --
 ALTER TABLE `job`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `language`
@@ -578,7 +598,7 @@ ALTER TABLE `photo`
 -- AUTO_INCREMENT pour la table `position`
 --
 ALTER TABLE `position`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `school`
@@ -590,7 +610,7 @@ ALTER TABLE `school`
 -- AUTO_INCREMENT pour la table `sexualorientation`
 --
 ALTER TABLE `sexualorientation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT pour la table `sleephabits`
@@ -608,6 +628,12 @@ ALTER TABLE `smokingfrequency`
 -- AUTO_INCREMENT pour la table `socialnetworks`
 --
 ALTER TABLE `socialnetworks`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT pour la table `relationshipintent`
+--
+ALTER TABLE `relationshipintent`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -652,6 +678,14 @@ ALTER TABLE `userlanguage`
 ALTER TABLE `users`
   ADD CONSTRAINT `fk_position_id` FOREIGN KEY (`position_id`) REFERENCES `position` (`id`),
   ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`),
+  ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`),
+  ADD CONSTRAINT `users_ibfk_3` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`),
+  ADD CONSTRAINT `users_ibfk_4` FOREIGN KEY (`astrological_sign_id`) REFERENCES `astrologicalsign` (`id`),
+  ADD CONSTRAINT `users_ibfk_5` FOREIGN KEY (`level_study_id`) REFERENCES `levelstudy` (`id`),
+  ADD CONSTRAINT `users_ibfk_6` FOREIGN KEY (`family_projects_id`) REFERENCES `familyprojects` (`id`),
+  ADD CONSTRAINT `users_ibfk_7` FOREIGN KEY (`personality_id`) REFERENCES `personality` (`id`),
+  ADD CONSTRAINT `users_ibfk_8` FOREIGN KEY (`communication_id`) REFERENCES `communication` (`id`),
+  ADD CONSTRAINT `users_ibfk_9` FOREIGN KEY (`language_of_love_id`) REFERENCES `languageoflove` (`id`),
   ADD CONSTRAINT `users_ibfk_10` FOREIGN KEY (`blood_group_id`) REFERENCES `bloodgroup` (`id`),
   ADD CONSTRAINT `users_ibfk_11` FOREIGN KEY (`pet_id`) REFERENCES `pet` (`id`),
   ADD CONSTRAINT `users_ibfk_12` FOREIGN KEY (`alcohol_id`) REFERENCES `alcohol` (`id`),
@@ -661,14 +695,7 @@ ALTER TABLE `users`
   ADD CONSTRAINT `users_ibfk_16` FOREIGN KEY (`social_networks_id`) REFERENCES `socialnetworks` (`id`),
   ADD CONSTRAINT `users_ibfk_17` FOREIGN KEY (`sleep_habits_id`) REFERENCES `sleephabits` (`id`),
   ADD CONSTRAINT `users_ibfk_18` FOREIGN KEY (`sexual_orientation_id`) REFERENCES `sexualorientation` (`id`),
-  ADD CONSTRAINT `users_ibfk_2` FOREIGN KEY (`job_id`) REFERENCES `job` (`id`),
-  ADD CONSTRAINT `users_ibfk_3` FOREIGN KEY (`school_id`) REFERENCES `school` (`id`),
-  ADD CONSTRAINT `users_ibfk_4` FOREIGN KEY (`astrological_sign_id`) REFERENCES `astrologicalsign` (`id`),
-  ADD CONSTRAINT `users_ibfk_5` FOREIGN KEY (`level_study_id`) REFERENCES `levelstudy` (`id`),
-  ADD CONSTRAINT `users_ibfk_6` FOREIGN KEY (`family_projects_id`) REFERENCES `familyprojects` (`id`),
-  ADD CONSTRAINT `users_ibfk_7` FOREIGN KEY (`personality_id`) REFERENCES `personality` (`id`),
-  ADD CONSTRAINT `users_ibfk_8` FOREIGN KEY (`communication_id`) REFERENCES `communication` (`id`),
-  ADD CONSTRAINT `users_ibfk_9` FOREIGN KEY (`language_of_love_id`) REFERENCES `languageoflove` (`id`);
+  ADD CONSTRAINT `users_ibfk_19` FOREIGN KEY (`relationship_intent_id`) REFERENCES `relationshipintent` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

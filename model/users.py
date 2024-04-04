@@ -18,6 +18,7 @@ from model.sport import Sport
 from model.foodpreferences import FoodPreferences
 from model.socialnetworks import SocialNetworks
 from model.sleephabits import SleepHabits
+from model.relationshipintent import RelationshipIntent
 from model.position import Position
 
 class Users(Base):
@@ -65,6 +66,8 @@ class Users(Base):
     social_networks = relationship(SocialNetworks, backref="users")
     sleep_habits_id = Column(Integer, ForeignKey('sleephabits.id'))
     sleep_habits = relationship(SleepHabits, backref="users")
+    relationship_intent_id = Column(Integer, ForeignKey('relationshipintent.id'))
+    relationship_intent = relationship(RelationshipIntent, backref="users")
     distance = Column(Integer)
     position_id = Column(Integer, ForeignKey('position.id'), nullable=False)
     position = relationship(Position, backref="users")
